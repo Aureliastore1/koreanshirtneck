@@ -55,11 +55,19 @@
   .headline-left{font-family:'Fraunces',serif;font-weight:700;font-size:19px;color:var(--orange);line-height:1.15;}
   .headline-pct{font-family:'Fraunces',serif;font-weight:900;font-size:52px;color:var(--orange);line-height:.85;}
 
-  /* ===== GALLERY (slideshow) ===== */
+  /* ===== GALLERY (thumbnails + main slider) ===== */
+  .gallery{display:flex;gap:8px;margin-bottom:10px;}
+  .thumb-col{display:flex;flex-direction:column;gap:8px;width:26%;flex-shrink:0;}
+  .thumb{
+    aspect-ratio:1/1.15;border-radius:4px;overflow:hidden;
+    border:1px solid var(--line);cursor:pointer;opacity:.75;
+  }
+  .thumb.active{opacity:1;outline:2px solid var(--orange);}
+  .thumb img{width:100%;height:100%;object-fit:cover;}
   .slider{
-    position:relative;border-radius:4px;overflow:hidden;
+    position:relative;border-radius:4px;overflow:hidden;flex:1;
     border:1px solid var(--line);background:#F3E9E3;
-    margin-bottom:10px;aspect-ratio:1007/1512;
+    aspect-ratio:3/4;
   }
   .slider .slide{
     position:absolute;inset:0;opacity:0;transition:opacity .35s ease;
@@ -72,21 +80,21 @@
   }
   .slider-arrow{
     position:absolute;top:50%;transform:translateY(-50%);
-    width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.85);
+    width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);
     border:none;display:flex;align-items:center;justify-content:center;
-    cursor:pointer;z-index:3;font-size:16px;color:var(--navy);
+    cursor:pointer;z-index:3;font-size:15px;color:var(--navy);
   }
-  .slider-arrow.prev{left:8px;}
-  .slider-arrow.next{right:8px;}
+  .slider-arrow.prev{left:6px;}
+  .slider-arrow.next{right:6px;}
   .slider-dots{
-    position:absolute;bottom:10px;left:0;right:0;
-    display:flex;justify-content:center;gap:6px;z-index:3;
+    position:absolute;bottom:8px;left:0;right:0;
+    display:flex;justify-content:center;gap:5px;z-index:3;
   }
   .slider-dots .dot-btn{
-    width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.6);
+    width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);
     border:none;cursor:pointer;padding:0;
   }
-  .slider-dots .dot-btn.active{background:var(--white);width:16px;border-radius:4px;}
+  .slider-dots .dot-btn.active{background:var(--white);width:14px;border-radius:4px;}
   .photo-swap-note{font-size:11px;color:var(--grey);text-align:center;margin:0 0 14px;}
 
   /* ===== TITLE / PRICE ===== */
@@ -224,22 +232,28 @@
     </div>
   </div>
 
-  <div class="slider" id="mainSlider">
-    <div class="slide active"><img src="images/main-1.png" alt="Knit vest with shirt collar — style 1"></div>
-    <div class="slide"><img src="images/main-2.png" alt="Knit vest with shirt collar — style 2"></div>
-    <div class="slide"><img src="images/main-3.png" alt="Knit vest with shirt collar — style 3"></div>
-    <div class="slide"><img src="images/main-4.png" alt="Knit vest with shirt collar — style 4"></div>
-    <span class="cap">@yourstore · [+62 phone]</span>
-    <button class="slider-arrow prev" aria-label="Previous photo">‹</button>
-    <button class="slider-arrow next" aria-label="Next photo">›</button>
-    <div class="slider-dots">
-      <button class="dot-btn active" data-i="0" aria-label="Photo 1"></button>
-      <button class="dot-btn" data-i="1" aria-label="Photo 2"></button>
-      <button class="dot-btn" data-i="2" aria-label="Photo 3"></button>
-      <button class="dot-btn" data-i="3" aria-label="Photo 4"></button>
+  <div class="gallery">
+    <div class="thumb-col">
+      <div class="thumb active" data-i="0"><img src="images/main-1.png" alt="thumbnail 1"></div>
+      <div class="thumb" data-i="2"><img src="images/main-3.png" alt="thumbnail 3"></div>
+    </div>
+    <div class="slider" id="mainSlider">
+      <div class="slide active"><img src="images/main-1.png" alt="Knit vest with shirt collar — style 1"></div>
+      <div class="slide"><img src="images/main-2.png" alt="Knit vest with shirt collar — style 2"></div>
+      <div class="slide"><img src="images/main-3.png" alt="Knit vest with shirt collar — style 3"></div>
+      <div class="slide"><img src="images/main-4.png" alt="Knit vest with shirt collar — style 4"></div>
+      <span class="cap">@yourstore · [+62 phone]</span>
+      <button class="slider-arrow prev" aria-label="Previous photo">‹</button>
+      <button class="slider-arrow next" aria-label="Next photo">›</button>
+      <div class="slider-dots">
+        <button class="dot-btn active" data-i="0" aria-label="Photo 1"></button>
+        <button class="dot-btn" data-i="1" aria-label="Photo 2"></button>
+        <button class="dot-btn" data-i="2" aria-label="Photo 3"></button>
+        <button class="dot-btn" data-i="3" aria-label="Photo 4"></button>
+      </div>
     </div>
   </div>
-  <p class="photo-swap-note">Swipe or use the arrows to see more photos</p>
+  <p class="photo-swap-note">Swipe, use the arrows, or tap a thumbnail to see more photos</p>
 
   <div style="padding:0 18px;">
     <p class="product-title">Korean-Style Two-Layer Knit Sweater with Shirt Collar</p>
@@ -451,15 +465,18 @@
     if (!root) return;
     var slides = root.querySelectorAll('.slide');
     var dots = root.querySelectorAll('.dot-btn');
+    var thumbs = document.querySelectorAll('.thumb');
     var i = 0;
     function show(n){
       i = (n + slides.length) % slides.length;
       slides.forEach(function(s, idx){ s.classList.toggle('active', idx === i); });
       dots.forEach(function(d, idx){ d.classList.toggle('active', idx === i); });
+      thumbs.forEach(function(t){ t.classList.toggle('active', parseInt(t.getAttribute('data-i'), 10) === i); });
     }
     root.querySelector('.prev').addEventListener('click', function(){ show(i - 1); });
     root.querySelector('.next').addEventListener('click', function(){ show(i + 1); });
     dots.forEach(function(d){ d.addEventListener('click', function(){ show(parseInt(d.getAttribute('data-i'), 10)); }); });
+    thumbs.forEach(function(t){ t.addEventListener('click', function(){ show(parseInt(t.getAttribute('data-i'), 10)); }); });
   })();
 </script>
 
